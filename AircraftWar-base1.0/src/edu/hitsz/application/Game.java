@@ -3,6 +3,7 @@ package edu.hitsz.application;
 import edu.hitsz.aircraft.*;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
+import edu.hitsz.prop.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,6 +30,7 @@ public class Game extends JPanel {
     private final List<AbstractAircraft> enemyAircrafts;
     private final List<BaseBullet> heroBullets;
     private final List<BaseBullet> enemyBullets;
+    private final List<AbstractProp> props;
 
     //屏幕中出现的敌机最大数量
     private final int enemyMaxNumber = 5;
@@ -48,14 +50,12 @@ public class Game extends JPanel {
     private boolean gameOverFlag = false;
 
     public Game() {
-        heroAircraft = new HeroAircraft(
-                Main.WINDOW_WIDTH / 2,
-                Main.WINDOW_HEIGHT - ImageManager.HERO_IMAGE.getHeight() ,
-                0, 0, 100);
+        heroAircraft = HeroAircraft.getInstance();
 
         enemyAircrafts = new LinkedList<>();
         heroBullets = new LinkedList<>();
         enemyBullets = new LinkedList<>();
+        props = new LinkedList<>();
 
         //启动英雄机鼠标监听
         new HeroController(this, heroAircraft);
@@ -95,6 +95,8 @@ public class Game extends JPanel {
                 bulletsMoveAction();
                 // 飞机移动
                 aircraftsMoveAction();
+                // 道具移动
+                propsMoveAction();
                 // 撞击检测
                 crashCheckAction();
                 // 后处理
@@ -139,6 +141,40 @@ public class Game extends JPanel {
         }
     }
 
+    /**
+     * 道具移动
+     */
+    private void propsMoveAction() {
+        for (AbstractProp prop : props) {
+            prop.forward();
+        }
+    }
+
+    /**
+     * 生成道具
+     */
+    private void generateProp(int x, int y) {
+        Random random = new Random();
+        int propType = random.nextInt(3); // 0: HpProp, 1: FireProp, 2: FirePlusProp
+        int speedX = 0;
+        int speedY = 5;
+        
+        AbstractProp prop;
+        switch (propType) {
+            case 0:
+                prop = new HpProp(x, y, speedX, speedY);
+                break;
+            case 1:
+                prop = new FireProp(x, y, speedX, speedY);
+                break;
+            case 2:
+            default:
+                prop = new FirePlusProp(x, y, speedX, speedY);
+                break;
+        }
+        props.add(prop);
+    }
+
 
     /**
      * 碰撞检测：
@@ -166,8 +202,12 @@ public class Game extends JPanel {
                     enemyAircraft.decreaseHp(bullet.getPower());
                     bullet.vanish();
                     if (enemyAircraft.notValid()) {
-                        // TODO 获得分数，产生道具补给
+                        // 获得分数，产生道具补给
                         score += 10;
+                        // 精英敌机坠毁时30%概率生成道具
+                        if (enemyAircraft instanceof EliteEnemy && Math.random() < 0.3) {
+                            generateProp(enemyAircraft.getLocationX(), enemyAircraft.getLocationY());
+                        }
                     }
                 }
                 // 英雄机 与 敌机 相撞，均损毁
@@ -178,7 +218,16 @@ public class Game extends JPanel {
             }
         }
 
-        // Todo: 我方获得道具，道具生效
+        // 我方获得道具，道具生效
+        for (AbstractProp prop : props) {
+            if (prop.notValid()) {
+                continue;
+            }
+            if (prop.crash(heroAircraft) || heroAircraft.crash(prop)) {
+                prop.active();
+                prop.vanish();
+            }
+        }
 
     }
 
@@ -192,7 +241,7 @@ public class Game extends JPanel {
         enemyBullets.removeIf(AbstractFlyingObject::notValid);
         heroBullets.removeIf(AbstractFlyingObject::notValid);
         enemyAircrafts.removeIf(AbstractFlyingObject::notValid);
-        // Todo: 删除无效道具
+        props.removeIf(AbstractFlyingObject::notValid);
     }
 
     /**
@@ -232,7 +281,8 @@ public class Game extends JPanel {
         paintImageWithPositionRevised(g, heroBullets);
         paintImageWithPositionRevised(g, enemyAircrafts);
 
-        // Todo: 绘制道具
+        // 绘制道具
+        paintImageWithPositionRevised(g, props);
 
         g.drawImage(ImageManager.HERO_IMAGE, heroAircraft.getLocationX() - ImageManager.HERO_IMAGE.getWidth() / 2,
                 heroAircraft.getLocationY() - ImageManager.HERO_IMAGE.getHeight() / 2, null);

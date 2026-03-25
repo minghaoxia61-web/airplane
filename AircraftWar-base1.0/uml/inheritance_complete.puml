@@ -1,0 +1,125 @@
+@startuml
+
+' 抽象基类
+abstract class AbstractFlyingObject {
+  - locationX: int
+  - locationY: int
+  - speedX: int
+  - speedY: int
+  - image: BufferedImage
+  - width: int
+  - height: int
+  - isValid: boolean
+  + forward()
+  + crash(AbstractFlyingObject): boolean
+  + getLocationX(): int
+  + getLocationY(): int
+  + setLocation(double, double)
+  + getSpeedY(): int
+  + getImage(): BufferedImage
+  + getWidth(): int
+  + getHeight(): int
+  + vanish()
+  + notValid(): boolean
+}
+
+' 飞机抽象类
+abstract class AbstractAircraft extends AbstractFlyingObject {
+  - maxHp: int
+  - hp: int
+  + decreaseHp(int)
+  + getHp(): int
+  + shoot(): List<BaseBullet>
+}
+
+' 子弹抽象类
+abstract class BaseBullet extends AbstractFlyingObject {
+  - power: int
+  + getPower(): int
+}
+
+' 道具抽象类
+abstract class AbstractProp extends AbstractFlyingObject {
+  + active()
+}
+
+' 具体飞机类
+class HeroAircraft extends AbstractAircraft {
+  - static volatile instance: HeroAircraft
+  - shootNum: int
+  - power: int
+  - direction: int
+  - private HeroAircraft(int, int, int, int, int)
+  + static getInstance(): HeroAircraft
+  + forward()
+  + shoot(): List<BaseBullet>
+}
+
+class MobEnemy extends AbstractAircraft {
+  + MobEnemy(int, int, int, int, int)
+  + forward()
+  + shoot(): List<BaseBullet>
+}
+
+class EliteEnemy extends AbstractAircraft {
+  - power: int
+  - direction: int
+  + EliteEnemy(int, int, int, int, int)
+  + forward()
+  + shoot(): List<BaseBullet>
+}
+
+class ElitePlusEnemy extends AbstractAircraft {
+  + ElitePlusEnemy(int, int, int, int, int)
+  + forward()
+  + shoot(): List<BaseBullet>
+}
+
+class BossEnemy extends AbstractAircraft {
+  + BossEnemy(int, int, int, int, int)
+  + forward()
+  + shoot(): List<BaseBullet>
+}
+
+class UltimateEnemy extends AbstractAircraft {
+  + UltimateEnemy(int, int, int, int, int)
+  + forward()
+  + shoot(): List<BaseBullet>
+}
+
+' 具体子弹类
+class HeroBullet extends BaseBullet {
+  + HeroBullet(int, int, int, int, int)
+}
+
+class EnemyBullet extends BaseBullet {
+  + EnemyBullet(int, int, int, int, int)
+}
+
+' 具体道具类
+class HpProp extends AbstractProp {
+  + HpProp(int, int, int, int)
+  + active()
+}
+
+class FireProp extends AbstractProp {
+  + FireProp(int, int, int, int)
+  + active()
+}
+
+class FirePlusProp extends AbstractProp {
+  + FirePlusProp(int, int, int, int)
+  + active()
+}
+
+class BombProp extends AbstractProp {
+  + BombProp(int, int, int, int)
+  + active()
+}
+
+class FreezeProp extends AbstractProp {
+  + FreezeProp(int, int, int, int)
+  + active()
+}
+
+@enduml
