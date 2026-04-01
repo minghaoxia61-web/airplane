@@ -1,0 +1,55 @@
+@startuml
+' 道具创建的简单工厂模式结构图
+
+' 抽象道具类
+abstract class AbstractProp {
+  + AbstractProp(int locationX, int locationY, int speedX, int speedY)
+  + abstract void active()
+}
+
+' 具体道具类
+class HpProp {
+  + HpProp(int locationX, int locationY, int speedX, int speedY)
+  + void active()
+}
+
+class FireProp {
+  + FireProp(int locationX, int locationY, int speedX, int speedY)
+  + void active()
+}
+
+class FirePlusProp {
+  + FirePlusProp(int locationX, int locationY, int speedX, int speedY)
+  + void active()
+}
+
+class BombProp {
+  + BombProp(int locationX, int locationY, int speedX, int speedY)
+  + void active()
+}
+
+class FreezeProp {
+  + FreezeProp(int locationX, int locationY, int speedX, int speedY)
+  + void active()
+}
+
+' 道具工厂类
+class PropFactory {
+  + static AbstractProp createProp(String type, int x, int y)
+}
+
+' 继承关系
+HpProp --|> AbstractProp
+FireProp --|> AbstractProp
+FirePlusProp --|> AbstractProp
+BombProp --|> AbstractProp
+FreezeProp --|> AbstractProp
+
+' 工厂与产品的关系
+PropFactory ..> HpProp : 创建
+PropFactory ..> FireProp : 创建
+PropFactory ..> FirePlusProp : 创建
+PropFactory ..> BombProp : 创建
+PropFactory ..> FreezeProp : 创建
+
+@enduml

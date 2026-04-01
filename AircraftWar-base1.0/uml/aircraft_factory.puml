@@ -1,0 +1,76 @@
+@startuml
+' 敌机创建的工厂方法模式结构图
+
+' 抽象飞机类
+abstract class AbstractAircraft {
+  + AbstractAircraft(int locationX, int locationY, int speedX, int speedY, int hp)
+  + void forward()
+  + abstract List<BaseBullet> shoot()
+}
+
+' 具体敌机类
+class MobEnemy {
+  + MobEnemy(int locationX, int locationY, int speedX, int speedY, int hp)
+  + void forward()
+  + List<BaseBullet> shoot()
+}
+
+class EliteEnemy {
+  + EliteEnemy(int locationX, int locationY, int speedX, int speedY, int hp)
+  + void forward()
+  + List<BaseBullet> shoot()
+}
+
+class ElitePlusEnemy {
+  + ElitePlusEnemy(int locationX, int locationY, int speedX, int speedY, int hp)
+  + void forward()
+  + List<BaseBullet> shoot()
+}
+
+class UltimateEnemy {
+  + UltimateEnemy(int locationX, int locationY, int speedX, int speedY, int hp)
+  + void forward()
+  + List<BaseBullet> shoot()
+}
+
+' 飞机工厂接口
+interface AircraftFactory {
+  + createAircraft() : AbstractAircraft
+}
+
+' 具体工厂类
+class MobEnemyFactory {
+  + createAircraft() : AbstractAircraft
+}
+
+class EliteEnemyFactory {
+  + createAircraft() : AbstractAircraft
+}
+
+class ElitePlusEnemyFactory {
+  + createAircraft() : AbstractAircraft
+}
+
+class UltimateEnemyFactory {
+  + createAircraft() : AbstractAircraft
+}
+
+' 继承关系
+MobEnemy --|> AbstractAircraft
+EliteEnemy --|> AbstractAircraft
+ElitePlusEnemy --|> AbstractAircraft
+UltimateEnemy --|> AbstractAircraft
+
+' 实现关系
+MobEnemyFactory ..|> AircraftFactory
+EliteEnemyFactory ..|> AircraftFactory
+ElitePlusEnemyFactory ..|> AircraftFactory
+UltimateEnemyFactory ..|> AircraftFactory
+
+' 工厂与产品的关系
+MobEnemyFactory ..> MobEnemy : 创建
+EliteEnemyFactory ..> EliteEnemy : 创建
+ElitePlusEnemyFactory ..> ElitePlusEnemy : 创建
+UltimateEnemyFactory ..> UltimateEnemy : 创建
+
+@enduml
