@@ -52,6 +52,9 @@ public class Game extends JPanel {
 
     //当前玩家分数
     private int score = 0;
+    
+    //Boss生成标记
+    private boolean bossSpawned = false;
 
     //游戏结束标志
     private boolean gameOverFlag = false;
@@ -86,25 +89,33 @@ public class Game extends JPanel {
                     enemySpawnCounter = 0;
                     // 产生敌机
                     if (enemyAircrafts.size() < enemyMaxNumber) {
-                        double random = Math.random();
-                        AircraftFactory factory;
-                        
-                        if (random < 0.7) {
-                            // 70% 概率生成普通敌机
-                            factory = new MobEnemyFactory();
-                        } else if (random < 0.9) {
-                            // 20% 概率生成精英敌机
-                            factory = new EliteEnemyFactory();
-                        } else if (random < 0.98) {
-                            // 8% 概率生成精锐敌机
-                            factory = new ElitePlusEnemyFactory();
+                        // 检查是否需要生成Boss敌机
+                        if (score >= 500 && !bossSpawned) {
+                            AircraftFactory factory = new BossEnemyFactory();
+                            AbstractAircraft boss = factory.createAircraft();
+                            enemyAircrafts.add(boss);
+                            bossSpawned = true;
                         } else {
-                            // 2% 概率生成王牌敌机
-                            factory = new UltimateEnemyFactory();
+                            double random = Math.random();
+                            AircraftFactory factory;
+                            
+                            if (random < 0.7) {
+                                // 70% 概率生成普通敌机
+                                factory = new MobEnemyFactory();
+                            } else if (random < 0.9) {
+                                // 20% 概率生成精英敌机
+                                factory = new EliteEnemyFactory();
+                            } else if (random < 0.98) {
+                                // 8% 概率生成精锐敌机
+                                factory = new ElitePlusEnemyFactory();
+                            } else {
+                                // 2% 概率生成王牌敌机
+                                factory = new UltimateEnemyFactory();
+                            }
+                            
+                            AbstractAircraft enemy = factory.createAircraft();
+                            enemyAircrafts.add(enemy);
                         }
-                        
-                        AbstractAircraft enemy = factory.createAircraft();
-                        enemyAircrafts.add(enemy);
                     }
                 }
 
@@ -216,7 +227,22 @@ public class Game extends JPanel {
                         // 获得分数，产生道具补给
                         score += 10;
                         // 敌机坠毁时生成道具
-                        if (Math.random() < 0.3) {
+                        if (enemyAircraft instanceof BossEnemy) {
+                            // Boss敌机坠毁时随机掉落3个道具
+                            for (int i = 0; i < 3; i++) {
+                                Random random = new Random();
+                                String[] propTypes = {"Hp", "Fire", "FirePlus", "Bomb", "Freeze"};
+                                String propType = propTypes[random.nextInt(propTypes.length)];
+                                int offsetX = random.nextInt(60) - 30;
+                                int offsetY = random.nextInt(60) - 30;
+                                AbstractProp prop = PropFactory.createProp(propType, 
+                                        enemyAircraft.getLocationX() + offsetX, 
+                                        enemyAircraft.getLocationY() + offsetY);
+                                if (prop != null) {
+                                    props.add(prop);
+                                }
+                            }
+                        } else if (Math.random() < 0.3) {
                             if (enemyAircraft instanceof EliteEnemy) {
                                 generateProp(enemyAircraft.getLocationX(), enemyAircraft.getLocationY());
                             } else if (enemyAircraft instanceof ElitePlusEnemy) {

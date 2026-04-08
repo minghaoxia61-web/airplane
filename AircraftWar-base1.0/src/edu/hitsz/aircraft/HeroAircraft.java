@@ -4,6 +4,8 @@ import edu.hitsz.application.Main;
 import edu.hitsz.application.ImageManager;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.bullet.HeroBullet;
+import edu.hitsz.strategy.ShootStrategy;
+import edu.hitsz.strategy.StraightShoot;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -30,6 +32,7 @@ public class HeroAircraft extends AbstractAircraft {
     // 私有构造函数
     private HeroAircraft(int locationX, int locationY, int speedX, int speedY, int hp) {
         super(locationX, locationY, speedX, speedY, hp);
+        this.shootStrategy = new StraightShoot(power, direction, shootNum);
     }
 
     // 双重检查锁定获取单例
@@ -51,27 +54,6 @@ public class HeroAircraft extends AbstractAircraft {
     @Override
     public void forward() {
         // 英雄机由鼠标控制，不通过forward函数移动
-    }
-
-    @Override
-    /**
-     * 通过射击产生子弹
-     * @return 射击出的子弹List
-     */
-    public List<BaseBullet> shoot() {
-        List<BaseBullet> res = new LinkedList<>();
-        int x = this.getLocationX();
-        int y = this.getLocationY() + direction*2;
-        int speedX = 0;
-        int speedY = this.getSpeedY() + direction*5;
-        BaseBullet bullet;
-        for(int i=0; i<shootNum; i++){
-            // 子弹发射位置相对飞机位置向前偏移
-            // 多个子弹横向分散
-            bullet = new HeroBullet(x + (i*2 - shootNum + 1)*10, y, speedX, speedY, power);
-            res.add(bullet);
-        }
-        return res;
     }
 
 }

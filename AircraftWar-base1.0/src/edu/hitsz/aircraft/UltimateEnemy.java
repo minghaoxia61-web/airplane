@@ -3,6 +3,7 @@ package edu.hitsz.aircraft;
 import edu.hitsz.application.Main;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.bullet.EnemyBullet;
+import edu.hitsz.strategy.ScatteredShoot;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -26,6 +27,7 @@ public class UltimateEnemy extends AbstractAircraft {
 
     public UltimateEnemy(int locationX, int locationY, int speedX, int speedY, int hp) {
         super(locationX, locationY, speedX, speedY, hp);
+        this.shootStrategy = new ScatteredShoot(power, direction, 3);
     }
 
     @Override
@@ -44,24 +46,6 @@ public class UltimateEnemy extends AbstractAircraft {
         if (locationY >= Main.WINDOW_HEIGHT) {
             vanish();
         }
-    }
-
-    @Override
-    public List<BaseBullet> shoot() {
-        List<BaseBullet> res = new LinkedList<>();
-        int x = this.getLocationX();
-        int y = this.getLocationY() + direction * 2;
-        int speedY = this.getSpeedY() + direction * 5;
-        
-        // 发射扇形散射弹道（3颗子弹）
-        BaseBullet bullet1 = new EnemyBullet(x - 15, y, -2, speedY, power);
-        BaseBullet bullet2 = new EnemyBullet(x, y, 0, speedY, power);
-        BaseBullet bullet3 = new EnemyBullet(x + 15, y, 2, speedY, power);
-        res.add(bullet1);
-        res.add(bullet2);
-        res.add(bullet3);
-        
-        return res;
     }
 
 }

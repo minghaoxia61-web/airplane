@@ -3,6 +3,7 @@ package edu.hitsz.aircraft;
 import edu.hitsz.application.Main;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.bullet.EnemyBullet;
+import edu.hitsz.strategy.StraightShoot;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -22,6 +23,7 @@ public class EliteEnemy extends AbstractAircraft {
 
     public EliteEnemy(int locationX, int locationY, int speedX, int speedY, int hp) {
         super(locationX, locationY, speedX, speedY, hp);
+        this.shootStrategy = new StraightShoot(power, direction, 1);
     }
 
     @Override
@@ -31,18 +33,6 @@ public class EliteEnemy extends AbstractAircraft {
         if (locationY >= Main.WINDOW_HEIGHT) {
             vanish();
         }
-    }
-
-    @Override
-    public List<BaseBullet> shoot() {
-        List<BaseBullet> res = new LinkedList<>();
-        int x = this.getLocationX();
-        int y = this.getLocationY() + direction * 2;
-        int speedX = 0;
-        int speedY = this.getSpeedY() + direction * 5;
-        BaseBullet bullet = new EnemyBullet(x, y, speedX, speedY, power);
-        res.add(bullet);
-        return res;
     }
 
 }

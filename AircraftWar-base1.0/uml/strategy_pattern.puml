@@ -1,0 +1,149 @@
+@startuml Strategy_Pattern_Bullet_System
+
+title 弹道系统策略模式结构图
+
+' 定义策略接口
+interface ShootStrategy {
+    + doShoot(aircraft: AbstractAircraft): List<BaseBullet>
+}
+
+' 定义具体策略类
+class StraightShoot {
+    - power: int
+    - direction: int
+    - shootNum: int
+    + StraightShoot(power: int, direction: int, shootNum: int)
+    + doShoot(aircraft: AbstractAircraft): List<BaseBullet>
+}
+
+class DoubleShoot {
+    - power: int
+    - direction: int
+    + DoubleShoot(power: int, direction: int)
+    + doShoot(aircraft: AbstractAircraft): List<BaseBullet>
+}
+
+class ScatteredShoot {
+    - power: int
+    - direction: int
+    - bulletCount: int
+    + ScatteredShoot(power: int, direction: int, bulletCount: int)
+    + doShoot(aircraft: AbstractAircraft): List<BaseBullet>
+}
+
+class RingShoot {
+    - power: int
+    - direction: int
+    - bulletCount: int
+    + RingShoot(power: int, direction: int, bulletCount: int)
+    + doShoot(aircraft: AbstractAircraft): List<BaseBullet>
+}
+
+' 定义上下文类
+abstract class AbstractAircraft {
+    # maxHp: int
+    # hp: int
+    # shootStrategy: ShootStrategy
+    + AbstractAircraft(locationX: int, locationY: int, speedX: int, speedY: int, hp: int)
+    + setShootStrategy(strategy: ShootStrategy): void
+    + shoot(): List<BaseBullet>
+    + forward(): void
+    {abstract} + forward(): void
+}
+
+' 定义具体飞机类
+class HeroAircraft {
+    - instance: HeroAircraft {static}
+    - shootNum: int
+    - power: int
+    - direction: int
+    + getInstance(): HeroAircraft {static}
+    + forward(): void
+}
+
+class EliteEnemy {
+    - power: int
+    - direction: int
+    + EliteEnemy(locationX: int, locationY: int, speedX: int, speedY: int, hp: int)
+    + forward(): void
+}
+
+class ElitePlusEnemy {
+    - power: int
+    - direction: int
+    - moveCounter: int
+    + ElitePlusEnemy(locationX: int, locationY: int, speedX: int, speedY: int, hp: int)
+    + forward(): void
+}
+
+class UltimateEnemy {
+    - power: int
+    - direction: int
+    - moveCounter: int
+    + UltimateEnemy(locationX: int, locationY: int, speedX: int, speedY: int, hp: int)
+    + forward(): void
+}
+
+class BossEnemy {
+    - power: int
+    - direction: int
+    + BossEnemy(locationX: int, locationY: int, speedX: int, speedY: int, hp: int)
+    + forward(): void
+}
+
+class MobEnemy {
+    + MobEnemy(locationX: int, locationY: int, speedX: int, speedY: int, hp: int)
+    + forward(): void
+}
+
+' 定义关系
+ShootStrategy <|.. StraightShoot : 实现
+ShootStrategy <|.. DoubleShoot : 实现
+ShootStrategy <|.. ScatteredShoot : 实现
+ShootStrategy <|.. RingShoot : 实现
+
+AbstractAircraft o--> ShootStrategy : 使用
+
+AbstractAircraft <|-- HeroAircraft
+AbstractAircraft <|-- EliteEnemy
+AbstractAircraft <|-- ElitePlusEnemy
+AbstractAircraft <|-- UltimateEnemy
+AbstractAircraft <|-- BossEnemy
+AbstractAircraft <|-- MobEnemy
+
+' 添加注释
+note right of ShootStrategy
+  策略接口
+  定义弹道射击的统一接口
+end note
+
+note right of AbstractAircraft
+  上下文类
+  持有策略引用，
+  通过 setShootStrategy()
+  动态切换弹道
+end note
+
+note bottom of StraightShoot
+  单排直射策略
+  用于：精英敌机、英雄机
+end note
+
+note bottom of DoubleShoot
+  双排直射策略
+  用于：精锐敌机
+end note
+
+note bottom of ScatteredShoot
+  散射弹道策略
+  用于：王牌敌机、
+       英雄机火力道具
+end note
+
+note bottom of RingShoot
+  环射弹道策略
+  用于：Boss敌机、
+       英雄机超级火力道具
+end note
+
+@enduml
