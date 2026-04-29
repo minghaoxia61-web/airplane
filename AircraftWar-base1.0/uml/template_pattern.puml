@@ -1,0 +1,76 @@
+@startuml Template Method Pattern
+
+title 模板方法模式 (Template Method Pattern)
+caption 设计模式：模板方法模式 - 难度控制
+
+abstract class AbstractGame {
+    #initDifficulty()*
+    #createEnemy()*
+    #difficultyGrow()*
+    #checkBoss()*
+    +canSpawnBoss()
+    +action() <<final>>
+}
+
+class EasyGame {
+    +initDifficulty()
+    +createEnemy()
+    +difficultyGrow()
+    +checkBoss()
+    +canSpawnBoss() : false
+}
+
+class NormalGame {
+    -timeCounter: int
+    -enemySpeedMultiplier: double
+    -enemyHpBonus: int
+    +initDifficulty()
+    +createEnemy()
+    +difficultyGrow()
+    +checkBoss()
+}
+
+class HardGame {
+    -timeCounter: int
+    -enemySpeedMultiplier: double
+    -enemyHpBonus: int
+    -enemyFireRateMultiplier: double
+    -bossHpMultiplier: int
+    +initDifficulty()
+    +createEnemy()
+    +difficultyGrow()
+    +checkBoss()
+    +onBossSpawned()
+}
+
+class Game {
+    -difficultyStrategy: AbstractGame
+    +action()
+}
+
+AbstractGame <|-- EasyGame : extends
+AbstractGame <|-- NormalGame : extends
+AbstractGame <|-- HardGame : extends
+Game --> AbstractGame : uses
+
+note left of AbstractGame
+  角色：抽象模板类 (AbstractClass)
+  定义模板方法和抽象钩子
+end note
+
+note right of EasyGame
+  角色：具体子类 (ConcreteClass)
+  无难度递增，不生成Boss
+end note
+
+note right of NormalGame
+  角色：具体子类 (ConcreteClass)
+  速度+10%, 血量+10, Boss血量不提升
+end note
+
+note right of HardGame
+  角色：具体子类 (ConcreteClass)
+  速度+15%, 血量+15, 射速-5%, Boss血量递增
+end note
+
+@enduml

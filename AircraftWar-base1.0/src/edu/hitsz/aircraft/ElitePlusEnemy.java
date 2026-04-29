@@ -15,37 +15,61 @@ import java.util.List;
  */
 public class ElitePlusEnemy extends AbstractAircraft {
 
-    //子弹威力
-    private int power = 25;
-
-    //子弹射击方向 (向上发射：-1，向下发射：1)
+    private int power = 1;
     private int direction = 1;
 
-    // 左右移动的计数器，用于控制移动方向
     private int moveCounter = 0;
     private final int moveInterval = 50;
+
+    private boolean isFrozen = false;
+    private long freezeStartTime = 0;
+    private final long freezeDuration = 3000;
+    private int originalSpeedX;
+    private int originalSpeedY;
 
     public ElitePlusEnemy(int locationX, int locationY, int speedX, int speedY, int hp) {
         super(locationX, locationY, speedX, speedY, hp);
         this.shootStrategy = new DoubleShoot(power, direction);
+        this.originalSpeedX = speedX;
+        this.originalSpeedY = speedY;
     }
 
     @Override
     public void forward() {
+        if (isFrozen) {
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - freezeStartTime >= freezeDuration) {
+                isFrozen = false;
+                speedX = originalSpeedX;
+                speedY = originalSpeedY;
+            } else {
+                return;
+            }
+        }
         super.forward();
-        
-        // 左右移动逻辑
+
         moveCounter++;
         if (moveCounter >= moveInterval) {
             moveCounter = 0;
-            // 随机改变左右移动方向
-            speedX = (int) (Math.random() * 6 - 3); // -3 到 2 之间的随机值
+            speedX = (int) (Math.random() * 6 - 3);
         }
-        
-        // 判定 y 轴向下飞行出界
+
         if (locationY >= Main.WINDOW_HEIGHT) {
             vanish();
         }
+    }
+
+    @Override
+    public void onBomb() {
+        vanish();
+    }
+
+    @Override
+    public void onFreeze() {
+        isFrozen = true;
+        freezeStartTime = System.currentTimeMillis();
+        speedX = 0;
+        speedY = 0;
     }
 
 }

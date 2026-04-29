@@ -15,37 +15,61 @@ import java.util.List;
  */
 public class UltimateEnemy extends AbstractAircraft {
 
-    //子弹威力
-    private int power = 30;
-
-    //子弹射击方向 (向上发射：-1，向下发射：1)
+    private int power = 2;
     private int direction = 1;
 
-    // 左右移动的计数器，用于控制移动方向
     private int moveCounter = 0;
     private final int moveInterval = 40;
+
+    private boolean isSlowed = false;
+    private long slowStartTime = 0;
+    private final long slowDuration = 5000;
+    private int originalSpeedX;
+    private int originalSpeedY;
 
     public UltimateEnemy(int locationX, int locationY, int speedX, int speedY, int hp) {
         super(locationX, locationY, speedX, speedY, hp);
         this.shootStrategy = new ScatteredShoot(power, direction, 3);
+        this.originalSpeedX = speedX;
+        this.originalSpeedY = speedY;
     }
 
     @Override
     public void forward() {
+        if (isSlowed) {
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - slowStartTime >= slowDuration) {
+                isSlowed = false;
+                speedX = originalSpeedX;
+                speedY = originalSpeedY;
+            }
+        }
         super.forward();
-        
-        // 左右移动逻辑
+
         moveCounter++;
         if (moveCounter >= moveInterval) {
             moveCounter = 0;
-            // 随机改变左右移动方向
-            speedX = (int) (Math.random() * 8 - 4); // -4 到 3 之间的随机值
+            if (!isSlowed) {
+                speedX = (int) (Math.random() * 8 - 4);
+            }
         }
-        
-        // 判定 y 轴向下飞行出界
+
         if (locationY >= Main.WINDOW_HEIGHT) {
             vanish();
         }
+    }
+
+    @Override
+    public void onBomb() {
+        decreaseHp(50);
+    }
+
+    @Override
+    public void onFreeze() {
+        isSlowed = true;
+        slowStartTime = System.currentTimeMillis();
+        speedX = originalSpeedX / 2;
+        speedY = originalSpeedY / 2;
     }
 
 }

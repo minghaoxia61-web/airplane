@@ -1,0 +1,51 @@
+@startuml
+title 飞机大战 — 数据访问对象（DAO）模式
+
+package "业务 / 展示" {
+    class Game {
+        - difficulty : GameDifficulty
+        - handleGameOver(score : int)
+    }
+    class LeaderboardPrinter {
+        {static} printToConsole(dao : ScoreRecordDao)
+    }
+}
+
+package "持久化 / 数据访问" <<Rectangle>> {
+    interface ScoreRecordDao {
+        + insert(playerName, score, recordTime)
+        + deleteById(id : long) : boolean
+        + findAllSortedByScoreDesc() : List~ScoreRecord~
+        + getDifficulty() : GameDifficulty
+    }
+    class ScoreRecordDaoImpl {
+        - difficulty : GameDifficulty
+        - dataFile : Path
+    }
+    class ScoreRecord {
+        - id : long
+        - playerName : String
+        - score : int
+        - recordTime : LocalDateTime
+    }
+    enum GameDifficulty {
+        EASY
+        NORMAL
+        HARD
+    }
+}
+
+Game ..> ScoreRecordDao : 依赖接口
+Game ..> ScoreRecordDaoImpl : 构造实现
+Game ..> LeaderboardPrinter
+LeaderboardPrinter ..> ScoreRecordDao
+ScoreRecordDaoImpl ..|> ScoreRecordDao
+ScoreRecordDaoImpl ..> ScoreRecord : 读写 VO
+ScoreRecordDaoImpl ..> GameDifficulty
+
+note right of ScoreRecordDao
+  <<Data Access Object>>
+  分离业务与文件持久化细节
+end note
+
+@enduml

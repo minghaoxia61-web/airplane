@@ -1,5 +1,7 @@
 package edu.hitsz.application;
 
+import edu.hitsz.dao.GameDifficulty;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -26,9 +28,19 @@ public class Main {
                 WINDOW_WIDTH, WINDOW_HEIGHT);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        Game game = new Game();
-        frame.add(game);
+        CardLayout cardLayout = new CardLayout(0, 0);
+        JPanel cardPanel = new JPanel(cardLayout);
+        frame.setContentPane(cardPanel);
+
+        StartMenuPanel startMenu = new StartMenuPanel(difficulty -> {
+            Game game = new Game(difficulty);
+            cardPanel.add(game, "game-" + difficulty.name());
+            cardLayout.show(cardPanel, "game-" + difficulty.name());
+            game.action();
+        });
+        cardPanel.add(startMenu, "menu");
+
         frame.setVisible(true);
-        game.action();
+        cardLayout.show(cardPanel, "menu");
     }
 }

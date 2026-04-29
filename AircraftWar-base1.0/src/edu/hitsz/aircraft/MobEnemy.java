@@ -20,10 +20,20 @@ public class MobEnemy extends AbstractAircraft {
     @Override
     public void forward() {
         super.forward();
-        // 判定 y 轴向下飞行出界
         if (locationY >= Main.WINDOW_HEIGHT ) {
             vanish();
         }
+    }
+
+    @Override
+    public void onBomb() {
+        vanish();
+    }
+
+    @Override
+    public void onFreeze() {
+        speedX = 0;
+        speedY = 0;
     }
 
 }

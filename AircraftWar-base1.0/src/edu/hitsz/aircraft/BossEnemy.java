@@ -15,7 +15,7 @@ import java.util.List;
 public class BossEnemy extends AbstractAircraft {
 
     //子弹威力
-    private int power = 40;
+    private int power = 3;
 
     //子弹射击方向 (向上发射：-1，向下发射：1)
     private int direction = 1;

@@ -9,6 +9,8 @@ import edu.hitsz.strategy.ScatteredShoot;
  */
 public class FireProp extends AbstractProp {
 
+    private static final long DURATION_MS = 5000;
+
     public FireProp(int locationX, int locationY, int speedX, int speedY) {
         super(locationX, locationY, speedX, speedY);
     }
@@ -17,7 +19,7 @@ public class FireProp extends AbstractProp {
     public void active() {
         System.out.println("FireSupply active!");
         HeroAircraft heroAircraft = HeroAircraft.getInstance();
-        heroAircraft.setShootStrategy(new ScatteredShoot(30, -1, 5));
+        heroAircraft.applyFirepowerBuff(new ScatteredShoot(30, -1, 5), DURATION_MS);
         System.out.println("火力道具生效：弹道切换为散射模式！");
     }
 

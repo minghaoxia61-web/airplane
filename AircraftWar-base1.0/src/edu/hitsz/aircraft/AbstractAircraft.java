@@ -9,7 +9,7 @@ import java.util.List;
  * 所有种类飞机的抽象父类
  * @author hitsz
  */
-public abstract class AbstractAircraft extends AbstractFlyingObject {
+public abstract class AbstractAircraft extends AbstractFlyingObject implements EnemyObserver {
 
     //最大生命值
     protected int maxHp;
@@ -28,6 +28,13 @@ public abstract class AbstractAircraft extends AbstractFlyingObject {
         if(hp <= 0){
             hp=0;
             vanish();
+        }
+    }
+
+    public void increaseHp(int increase) {
+        hp += increase;
+        if (hp > maxHp) {
+            hp = maxHp;
         }
     }
 
@@ -52,6 +59,12 @@ public abstract class AbstractAircraft extends AbstractFlyingObject {
         }
         return new java.util.LinkedList<>();
     }
+
+    @Override
+    public void onBomb() {}
+
+    @Override
+    public void onFreeze() {}
 
 }
 

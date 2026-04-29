@@ -1,0 +1,92 @@
+@startuml Observer Pattern
+
+title 观察者模式 (Observer Pattern)
+caption 设计模式：观察者模式 - 敌机响应道具效果
+
+interface EnemyObserver <<interface>> {
+    +onBomb()
+    +onFreeze()
+}
+
+abstract class PropSubject {
+    -observers: List<EnemyObserver>
+    +addObserver(EnemyObserver)
+    +removeObserver(EnemyObserver)
+    +notifyBomb()*
+    +notifyFreeze()*
+}
+
+class Prop {
+    +notifyBomb()
+    +notifyFreeze()
+    +triggerBomb()
+    +triggerFreeze()
+}
+
+abstract class AbstractAircraft {
+    <<implements>> EnemyObserver
+    +onBomb()
+    +onFreeze()
+}
+
+class MobEnemy {
+    +onBomb()
+    +onFreeze()
+}
+
+class EliteEnemy {
+    -isFrozen: boolean
+    -freezeStartTime: long
+    +onBomb()
+    +onFreeze()
+}
+
+class ElitePlusEnemy {
+    -isFrozen: boolean
+    -freezeStartTime: long
+    +onBomb()
+    +onFreeze()
+}
+
+class UltimateEnemy {
+    -isSlowed: boolean
+    -slowStartTime: long
+    +onBomb()
+    +onFreeze()
+}
+
+class BossEnemy {
+    +onBomb()
+    +onFreeze()
+}
+
+PropSubject <|-- Prop : extends
+EnemyObserver <|.. AbstractAircraft : implements
+AbstractAircraft <|-- MobEnemy : extends
+AbstractAircraft <|-- EliteEnemy : extends
+AbstractAircraft <|-- ElitePlusEnemy : extends
+AbstractAircraft <|-- UltimateEnemy : extends
+AbstractAircraft <|-- BossEnemy : extends
+Prop "1" --> "*" EnemyObserver : manages
+
+note left of EnemyObserver
+  角色：抽象观察者 (Observer)
+  定义响应接口
+end note
+
+note right of PropSubject
+  角色：抽象被观察者 (Subject)
+  管理观察者列表
+end note
+
+note bottom of Prop
+  角色：具体被观察者 (ConcreteSubject)
+  实现通知逻辑
+end note
+
+note bottom of MobEnemy
+  角色：具体观察者 (ConcreteObserver)
+  炸弹：坠毁，冰冻：永久静止
+end note
+
+@enduml
