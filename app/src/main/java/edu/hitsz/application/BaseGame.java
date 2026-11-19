@@ -393,7 +393,7 @@ public class BaseGame extends SurfaceView implements SurfaceHolder.Callback, Run
     /**
      * 绘制一帧，对应 Windows 端 paint(Graphics)
      */
-    private void draw(Canvas canvas) {
+    private void drawFrame(Canvas canvas) {
         // 绘制背景,图片滚动
         canvas.drawBitmap(backgroundImage, 0, backGroundTop - Main.WINDOW_HEIGHT, null);
         canvas.drawBitmap(backgroundImage, 0, backGroundTop, null);
@@ -479,7 +479,7 @@ public class BaseGame extends SurfaceView implements SurfaceHolder.Callback, Run
                 Canvas canvas = getHolder().lockCanvas();
                 if (canvas != null) {
                     try {
-                        draw(canvas);
+                        drawFrame(canvas);
                     } finally {
                         getHolder().unlockCanvasAndPost(canvas);
                     }
