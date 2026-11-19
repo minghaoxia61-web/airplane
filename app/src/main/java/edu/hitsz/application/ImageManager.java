@@ -70,43 +70,66 @@ public class ImageManager {
         // 精灵图按 屏幕宽/设计宽 的比例统一放大，保持与 Windows 端相对布局一致
         float scale = Math.max(1f, screenW / (float) DESIGN_WIDTH);
 
-        // 背景图拉伸到全屏
-        BACKGROUND_IMAGE = load(res, R.drawable.bg, screenW, screenH);
-        BACKGROUND_EASY_IMAGE = load(res, R.drawable.bg2, screenW, screenH);
-        BACKGROUND_NORMAL_IMAGE = load(res, R.drawable.bg3, screenW, screenH);
-        BACKGROUND_HARD_IMAGE = load(res, R.drawable.bg4, screenW, screenH);
+        // 背景图缩放到全屏尺寸
+        BACKGROUND_IMAGE = loadToSize(res, R.drawable.bg, screenW, screenH);
+        BACKGROUND_EASY_IMAGE = loadToSize(res, R.drawable.bg2, screenW, screenH);
+        BACKGROUND_NORMAL_IMAGE = loadToSize(res, R.drawable.bg3, screenW, screenH);
+        BACKGROUND_HARD_IMAGE = loadToSize(res, R.drawable.bg4, screenW, screenH);
 
-        HERO_IMAGE = load(res, R.drawable.hero, scale, scale);
-        MOB_ENEMY_IMAGE = load(res, R.drawable.mob, scale, scale);
-        ELITE_ENEMY_IMAGE = load(res, R.drawable.elite, scale, scale);
-        ELITE_PLUS_ENEMY_IMAGE = load(res, R.drawable.elite_plus, scale, scale);
-        BOSS_ENEMY_IMAGE = load(res, R.drawable.boss, scale, scale);
-        ULTIMATE_ENEMY_IMAGE = load(res, R.drawable.elite_pro, scale, scale);
-        HERO_BULLET_IMAGE = load(res, R.drawable.bullet_hero, scale, scale);
-        ENEMY_BULLET_IMAGE = load(res, R.drawable.bullet_enemy, scale, scale);
-        HP_PROP_IMAGE = load(res, R.drawable.prop_blood, scale, scale);
-        FIRE_PROP_IMAGE = load(res, R.drawable.prop_bullet, scale, scale);
-        FIRE_PLUS_PROP_IMAGE = load(res, R.drawable.prop_bullet_plus, scale, scale);
-        BOMB_PROP_IMAGE = load(res, R.drawable.prop_bomb, scale, scale);
-        FREEZE_PROP_IMAGE = load(res, R.drawable.prop_freeze, scale, scale);
+        HERO_IMAGE = loadScaled(res, R.drawable.hero, scale);
+        MOB_ENEMY_IMAGE = loadScaled(res, R.drawable.mob, scale);
+        ELITE_ENEMY_IMAGE = loadScaled(res, R.drawable.elite, scale);
+        ELITE_PLUS_ENEMY_IMAGE = loadScaled(res, R.drawable.elite_plus, scale);
+        BOSS_ENEMY_IMAGE = loadScaled(res, R.drawable.boss, scale);
+        ULTIMATE_ENEMY_IMAGE = loadScaled(res, R.drawable.elite_pro, scale);
+        HERO_BULLET_IMAGE = loadScaled(res, R.drawable.bullet_hero, scale);
+        ENEMY_BULLET_IMAGE = loadScaled(res, R.drawable.bullet_enemy, scale);
+        HP_PROP_IMAGE = loadScaled(res, R.drawable.prop_blood, scale);
+        FIRE_PROP_IMAGE = loadScaled(res, R.drawable.prop_bullet, scale);
+        FIRE_PLUS_PROP_IMAGE = loadScaled(res, R.drawable.prop_bullet_plus, scale);
+        BOMB_PROP_IMAGE = loadScaled(res, R.drawable.prop_bomb, scale);
+        FREEZE_PROP_IMAGE = loadScaled(res, R.drawable.prop_freeze, scale);
     }
 
     /**
-     * 解码并缩放图片；inScaled=false 保证拿到原始像素尺寸，避免密度缩放干扰
+     * 解码原始尺寸图片（inScaled=false 保证拿到原始像素，避免密度缩放干扰）
      */
-    private static Bitmap load(Resources res, int resId, float scaleX, float scaleY) {
+    private static Bitmap decodeRaw(Resources res, int resId) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
         Bitmap raw = BitmapFactory.decodeResource(res, resId, options);
         if (raw == null) {
             return Bitmap.createBitmap(8, 8, Bitmap.Config.ARGB_8888);
         }
-        int w = Math.max(1, Math.round(raw.getWidth() * scaleX));
-        int h = Math.max(1, Math.round(raw.getHeight() * scaleY));
+        return raw;
+    }
+
+    /**
+     * 解码并缩放到指定的目标尺寸（宽高为最终像素值）
+     */
+    private static Bitmap loadToSize(Resources res, int resId, int targetW, int targetH) {
+        Bitmap raw = decodeRaw(res, resId);
+        if (targetW <= 0 || targetH <= 0) {
+            return raw;
+        }
+        Bitmap scaled = Bitmap.createScaledBitmap(raw, targetW, targetH, true);
+        raw.recycle();
+        return scaled;
+    }
+
+    /**
+     * 解码并按倍数缩放精灵图
+     */
+    private static Bitmap loadScaled(Resources res, int resId, float scale) {
+        Bitmap raw = decodeRaw(res, resId);
+        int w = Math.max(1, Math.round(raw.getWidth() * scale));
+        int h = Math.max(1, Math.round(raw.getHeight() * scale));
         if (w == raw.getWidth() && h == raw.getHeight()) {
             return raw;
         }
-        return Bitmap.createScaledBitmap(raw, w, h, true);
+        Bitmap scaled = Bitmap.createScaledBitmap(raw, w, h, true);
+        raw.recycle();
+        return scaled;
     }
 
     public static Bitmap getBackground(GameDifficulty difficulty) {

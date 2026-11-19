@@ -110,6 +110,10 @@ public class BaseGame extends SurfaceView implements SurfaceHolder.Callback, Run
 
         this.backgroundImage = ImageManager.getBackground(difficulty);
         heroAircraft = HeroAircraft.getInstance();
+        Log.i(TAG, "诊断: screen=" + screenW + "x" + screenH
+                + ", WINDOW=" + Main.WINDOW_WIDTH + "x" + Main.WINDOW_HEIGHT
+                + ", hero=(" + heroAircraft.getLocationX() + "," + heroAircraft.getLocationY() + ")"
+                + ", heroHp=" + heroAircraft.getHp());
 
         enemyAircrafts = new LinkedList<>();
         heroBullets = new LinkedList<>();
@@ -375,7 +379,8 @@ public class BaseGame extends SurfaceView implements SurfaceHolder.Callback, Run
         if (heroAircraft.getHp() <= 0 && !gameOverFlag) {
             gameOverFlag = true;
             running = false; // 终止绘制线程（对应 Windows 端 timer.cancel()）
-            Log.i(TAG, "Game Over! score = " + score);
+            Log.i(TAG, "Game Over! score = " + score + ", heroHp=" + heroAircraft.getHp()
+                    + ", hero=(" + heroAircraft.getLocationX() + "," + heroAircraft.getLocationY() + ")");
             // 回到 UI 线程提示成绩（排行榜与回到主界面属于后续实验）
             Context ctx = getContext();
             if (ctx instanceof Activity) {
