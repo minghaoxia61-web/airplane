@@ -1,40 +1,31 @@
 package edu.hitsz;
 
 import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
+import edu.hitsz.application.BaseGame;
+import edu.hitsz.dao.GameDifficulty;
+
 public class MainActivity extends AppCompatActivity {
 
-    private MySurfaceView mMySurfaceView;
-    private OnBackPressedCallback mBackPressedCallback;
+    private BaseGame baseGame;
+    private OnBackPressedCallback backPressedCallback;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mMySurfaceView = new MySurfaceView(this);
-        setContentView(mMySurfaceView);
+        // 实验二：默认以简单难度启动（难度选择页面属于后续实验）
+        baseGame = new BaseGame(this, GameDifficulty.EASY);
+        setContentView(baseGame);
 
-        //注册返回键回调
-        mBackPressedCallback = new OnBackPressedCallback(true) { // true = 初始启用回调
+        backPressedCallback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                //关闭当前Activity
                 finish();
             }
         };
-        //将回调注册到 Activity 的返回键分发器
-        getOnBackPressedDispatcher().addCallback(this, mBackPressedCallback);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            mMySurfaceView.x = event.getX();
-            mMySurfaceView.y = event.getY();
-        }
-        return  true;
+        getOnBackPressedDispatcher().addCallback(this, backPressedCallback);
     }
 }
