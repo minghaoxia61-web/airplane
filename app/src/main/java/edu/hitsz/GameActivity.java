@@ -71,5 +71,7 @@ public class GameActivity extends AppCompatActivity {
         super.onDestroy();
         // 移除未处理的消息，防止泄漏
         uiHandler.removeCallbacksAndMessages(null);
+        // 实验三：退出游戏界面，释放 SoundPool 资源
+        edu.hitsz.music.MySoundPool.getInstance(this).release();
     }
 }

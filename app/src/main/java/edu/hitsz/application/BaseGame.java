@@ -29,6 +29,7 @@ import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
 import edu.hitsz.dao.GameDifficulty;
 import edu.hitsz.music.MyMediaPlayer;
+import edu.hitsz.music.MySoundPool;
 import edu.hitsz.prop.AbstractProp;
 import edu.hitsz.prop.BombProp;
 import edu.hitsz.prop.FreezeProp;
@@ -167,6 +168,8 @@ public class BaseGame extends SurfaceView implements SurfaceHolder.Callback, Run
      */
     private void startGame() {
         difficultyStrategy.action();
+        // 实验三：预加载游戏音效（SoundPool.load 为异步，尽早调用）
+        MySoundPool.getInstance(getContext());
     }
 
     /**
@@ -293,6 +296,8 @@ public class BaseGame extends SurfaceView implements SurfaceHolder.Callback, Run
             if (heroAircraft.crash(bullet)) {
                 heroAircraft.decreaseHp(bullet.getPower());
                 bullet.vanish();
+                // 实验三：敌机子弹击中英雄机音效
+                MySoundPool.getInstance(getContext()).playBulletHit();
             }
         }
 
@@ -310,6 +315,8 @@ public class BaseGame extends SurfaceView implements SurfaceHolder.Callback, Run
                     // 敌机损失一定生命值
                     enemyAircraft.decreaseHp(bullet.getPower());
                     bullet.vanish();
+                    // 实验三：英雄机子弹击中敌机音效
+                    MySoundPool.getInstance(getContext()).playBulletHit();
                     if (enemyAircraft.notValid()) {
                         // 获得分数，产生道具补给
                         score += 10;
@@ -364,8 +371,14 @@ public class BaseGame extends SurfaceView implements SurfaceHolder.Callback, Run
                 prop.active();
                 if (prop instanceof BombProp) {
                     propSubject.triggerBomb();
-                } else if (prop instanceof FreezeProp) {
-                    propSubject.triggerFreeze();
+                    // 实验三：炸弹爆炸音效
+                    MySoundPool.getInstance(getContext()).playBombExplosion();
+                } else {
+                    if (prop instanceof FreezeProp) {
+                        propSubject.triggerFreeze();
+                    }
+                    // 实验三：获取补给道具音效
+                    MySoundPool.getInstance(getContext()).playGetSupply();
                 }
                 prop.vanish();
             }
@@ -399,8 +412,9 @@ public class BaseGame extends SurfaceView implements SurfaceHolder.Callback, Run
         if (heroAircraft.getHp() <= 0 && !gameOverFlag) {
             gameOverFlag = true;
             running = false; // 终止绘制线程（对应 Windows 端 timer.cancel()）
-            // 实验三：游戏结束，停止背景音乐
+            // 实验三：游戏结束，停止背景音乐并播放结束音效
             MyMediaPlayer.getInstance(getContext()).stopAll();
+            MySoundPool.getInstance(getContext()).playGameOver();
             Log.i(TAG, "Game Over! score = " + score);
             // 子线程不能直接更新 UI，通过 Handler 把消息发回主线程（实验三 Handler 知识点）
             if (uiHandler != null) {
