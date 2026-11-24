@@ -91,6 +91,12 @@ public class BaseGame extends SurfaceView implements SurfaceHolder.Callback, Run
     private boolean running = false;
     private Thread gameThread;
 
+    //主线程 UI Handler：由 GameActivity 注入，用于子线程通知主线程更新 UI（实验三 Handler 知识点）
+    private android.os.Handler uiHandler;
+
+    /** Game Over 消息标识（与 GameActivity.MSG_GAME_OVER 保持一致） */
+    public static final int MSG_GAME_OVER = 1;
+
     //画笔：绘制得分和生命值
     private final Paint textPaint;
 
@@ -126,6 +132,13 @@ public class BaseGame extends SurfaceView implements SurfaceHolder.Callback, Run
         textPaint.setTextSize(22 * Math.max(1f, screenW / 512f));
 
         initDifficultyStrategy();
+    }
+
+    /**
+     * 注入主线程 Handler（实验三）：游戏子线程通过它向 UI 线程发送消息
+     */
+    public void setUiHandler(android.os.Handler uiHandler) {
+        this.uiHandler = uiHandler;
     }
 
     private void initDifficultyStrategy() {
@@ -379,14 +392,13 @@ public class BaseGame extends SurfaceView implements SurfaceHolder.Callback, Run
         if (heroAircraft.getHp() <= 0 && !gameOverFlag) {
             gameOverFlag = true;
             running = false; // 终止绘制线程（对应 Windows 端 timer.cancel()）
-            Log.i(TAG, "Game Over! score = " + score + ", heroHp=" + heroAircraft.getHp()
-                    + ", hero=(" + heroAircraft.getLocationX() + "," + heroAircraft.getLocationY() + ")");
-            // 回到 UI 线程提示成绩（排行榜与回到主界面属于后续实验）
-            Context ctx = getContext();
-            if (ctx instanceof Activity) {
-                ((Activity) ctx).runOnUiThread(() ->
-                        android.widget.Toast.makeText(ctx,
-                                "Game Over! SCORE: " + score, android.widget.Toast.LENGTH_LONG).show());
+            Log.i(TAG, "Game Over! score = " + score);
+            // 子线程不能直接更新 UI，通过 Handler 把消息发回主线程（实验三 Handler 知识点）
+            if (uiHandler != null) {
+                android.os.Message msg = android.os.Message.obtain();
+                msg.what = MSG_GAME_OVER;
+                msg.obj = score;
+                uiHandler.sendMessage(msg);
             }
         }
     }

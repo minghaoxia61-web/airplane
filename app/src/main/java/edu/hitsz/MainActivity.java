@@ -1,9 +1,12 @@
 package edu.hitsz;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import edu.hitsz.dao.GameDifficulty;
 
 /**
  * 实验三：难度选择页面（主界面）
@@ -35,7 +38,29 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // 难度选择按钮的跳转逻辑在实验三提交②中接入 GameActivity
-        // TODO(实验三提交②): btn_easy/btn_normal/btn_hard -> Intent 跳转
+        // 难度选择按钮：基于监听的事件处理（匿名内部类方式），
+        // 通过 Intent 携带难度参数跳转到 GameActivity
+        android.widget.Button btnEasy = findViewById(R.id.btn_easy);
+        android.widget.Button btnNormal = findViewById(R.id.btn_normal);
+        android.widget.Button btnHard = findViewById(R.id.btn_hard);
+
+        android.view.View.OnClickListener launchListener = new android.view.View.OnClickListener() {
+            @Override
+            public void onClick(android.view.View v) {
+                Intent intent = new Intent(MainActivity.this, GameActivity.class);
+                int id = v.getId();
+                if (id == R.id.btn_easy) {
+                    intent.putExtra(GameActivity.EXTRA_DIFFICULTY, GameDifficulty.EASY.name());
+                } else if (id == R.id.btn_normal) {
+                    intent.putExtra(GameActivity.EXTRA_DIFFICULTY, GameDifficulty.NORMAL.name());
+                } else if (id == R.id.btn_hard) {
+                    intent.putExtra(GameActivity.EXTRA_DIFFICULTY, GameDifficulty.HARD.name());
+                }
+                startActivity(intent);
+            }
+        };
+        btnEasy.setOnClickListener(launchListener);
+        btnNormal.setOnClickListener(launchListener);
+        btnHard.setOnClickListener(launchListener);
     }
 }
