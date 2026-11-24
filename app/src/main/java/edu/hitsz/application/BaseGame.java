@@ -118,6 +118,8 @@ public class BaseGame extends SurfaceView implements SurfaceHolder.Callback, Run
 
         this.backgroundImage = ImageManager.getBackground(difficulty);
         heroAircraft = HeroAircraft.getInstance();
+        // 实验三修复：单例英雄机恢复初始状态（满血、居中、清大招状态），保证重开局正常
+        heroAircraft.reset();
         Log.i(TAG, "诊断: screen=" + screenW + "x" + screenH
                 + ", WINDOW=" + Main.WINDOW_WIDTH + "x" + Main.WINDOW_HEIGHT
                 + ", hero=(" + heroAircraft.getLocationX() + "," + heroAircraft.getLocationY() + ")"

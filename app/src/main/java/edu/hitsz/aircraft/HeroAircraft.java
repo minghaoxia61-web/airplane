@@ -73,6 +73,21 @@ public class HeroAircraft extends AbstractAircraft {
         }
     }
 
+    /**
+     * 实验三修复：重开一局时恢复英雄机初始状态。
+     * 单例跨对局存活：上一局 Game Over 后 hp=0、位置停留在手指最后处，
+     * 若不重置，新对局会在开局瞬间再次判定 Game Over 并直接退出。
+     */
+    public void reset() {
+        this.locationX = Main.WINDOW_WIDTH / 2;
+        this.locationY = Main.WINDOW_HEIGHT - ImageManager.HERO_IMAGE.getHeight();
+        this.speedX = 0;
+        this.speedY = 0;
+        this.hp = maxHp;
+        this.lastUltimateTime = -ULTIMATE_COOLDOWN;
+        this.isUltimateActive = false;
+    }
+
     @Override
     public void forward() {
         // 英雄机由鼠标控制，不通过forward函数移动
