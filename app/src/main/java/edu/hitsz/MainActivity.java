@@ -11,14 +11,11 @@ import edu.hitsz.dao.GameDifficulty;
 /**
  * 实验三：难度选择页面（主界面）
  * 采用 XML 静态布局（res/layout/activity_menu.xml）+ 控件基于监听的事件处理
- * 音乐开关状态通过 SharedPreferences 持久化
+ * 音乐开关状态通过 SharedPreferences 持久化，由 MyMediaPlayer 统一管理
  */
 public class MainActivity extends AppCompatActivity {
 
-    public static final String PREFS_NAME = "aircraft_war";
-    public static final String KEY_MUSIC_ON = "music_on";
-
-    private SharedPreferences prefs;
+    private edu.hitsz.music.MyMediaPlayer musicManager;
     private android.widget.Switch musicSwitch;
 
     @Override
@@ -26,15 +23,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
-        prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        musicManager = edu.hitsz.music.MyMediaPlayer.getInstance(this);
 
         // 音乐开关：基于监听的事件处理（匿名内部类方式）
         musicSwitch = findViewById(R.id.switch_music);
-        musicSwitch.setChecked(prefs.getBoolean(KEY_MUSIC_ON, true));
+        musicSwitch.setChecked(musicManager.isMusicOn());
         musicSwitch.setOnCheckedChangeListener(new android.widget.CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(android.widget.CompoundButton buttonView, boolean isChecked) {
-                prefs.edit().putBoolean(KEY_MUSIC_ON, isChecked).apply();
+                musicManager.setMusicOn(isChecked);
             }
         });
 

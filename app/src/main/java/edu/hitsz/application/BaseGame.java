@@ -28,6 +28,7 @@ import edu.hitsz.aircraft.UltimateEnemyFactory;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
 import edu.hitsz.dao.GameDifficulty;
+import edu.hitsz.music.MyMediaPlayer;
 import edu.hitsz.prop.AbstractProp;
 import edu.hitsz.prop.BombProp;
 import edu.hitsz.prop.FreezeProp;
@@ -192,6 +193,8 @@ public class BaseGame extends SurfaceView implements SurfaceHolder.Callback, Run
                     enemyAircrafts.add(boss);
                     propSubject.addObserver(boss);
                     bossSpawned = true;
+                    // 实验三：Boss 出现时暂停游戏 BGM，切换 Boss BGM（课件要求）
+                    MyMediaPlayer.getInstance(getContext()).switchToBossBgm();
                     Log.i(TAG, "产生BOSS敌机");
                 } else {
                     double random = Math.random();
@@ -378,6 +381,10 @@ public class BaseGame extends SurfaceView implements SurfaceHolder.Callback, Run
         enemyAircrafts.removeIf(enemy -> {
             if (enemy.notValid()) {
                 propSubject.removeObserver(enemy);
+                // 实验三：Boss 坠毁时恢复游戏 BGM
+                if (enemy instanceof BossEnemy) {
+                    MyMediaPlayer.getInstance(getContext()).backToGameBgm();
+                }
                 return true;
             }
             return false;
@@ -392,6 +399,8 @@ public class BaseGame extends SurfaceView implements SurfaceHolder.Callback, Run
         if (heroAircraft.getHp() <= 0 && !gameOverFlag) {
             gameOverFlag = true;
             running = false; // 终止绘制线程（对应 Windows 端 timer.cancel()）
+            // 实验三：游戏结束，停止背景音乐
+            MyMediaPlayer.getInstance(getContext()).stopAll();
             Log.i(TAG, "Game Over! score = " + score);
             // 子线程不能直接更新 UI，通过 Handler 把消息发回主线程（实验三 Handler 知识点）
             if (uiHandler != null) {
@@ -461,6 +470,8 @@ public class BaseGame extends SurfaceView implements SurfaceHolder.Callback, Run
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder holder) {
         startGame();
+        // 实验三：进入游戏，开始播放背景音乐
+        MyMediaPlayer.getInstance(getContext()).startGameBgm();
         running = true;
         gameThread = new Thread(this, "game-draw-thread");
         gameThread.start();
@@ -483,6 +494,8 @@ public class BaseGame extends SurfaceView implements SurfaceHolder.Callback, Run
                 Thread.currentThread().interrupt();
             }
         }
+        // 实验三：退出游戏界面，释放音乐资源
+        MyMediaPlayer.getInstance(getContext()).stopAll();
     }
 
     @Override
