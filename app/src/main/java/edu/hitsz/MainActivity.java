@@ -1,31 +1,41 @@
 package edu.hitsz;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
-import edu.hitsz.application.BaseGame;
-import edu.hitsz.dao.GameDifficulty;
-
+/**
+ * 实验三：难度选择页面（主界面）
+ * 采用 XML 静态布局（res/layout/activity_menu.xml）+ 控件基于监听的事件处理
+ * 音乐开关状态通过 SharedPreferences 持久化
+ */
 public class MainActivity extends AppCompatActivity {
 
-    private BaseGame baseGame;
-    private OnBackPressedCallback backPressedCallback;
+    public static final String PREFS_NAME = "aircraft_war";
+    public static final String KEY_MUSIC_ON = "music_on";
+
+    private SharedPreferences prefs;
+    private android.widget.Switch musicSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // 实验二：默认以简单难度启动（难度选择页面属于后续实验）
-        baseGame = new BaseGame(this, GameDifficulty.EASY);
-        setContentView(baseGame);
+        setContentView(R.layout.activity_menu);
 
-        backPressedCallback = new OnBackPressedCallback(true) {
+        prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+
+        // 音乐开关：基于监听的事件处理（匿名内部类方式）
+        musicSwitch = findViewById(R.id.switch_music);
+        musicSwitch.setChecked(prefs.getBoolean(KEY_MUSIC_ON, true));
+        musicSwitch.setOnCheckedChangeListener(new android.widget.CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void handleOnBackPressed() {
-                finish();
+            public void onCheckedChanged(android.widget.CompoundButton buttonView, boolean isChecked) {
+                prefs.edit().putBoolean(KEY_MUSIC_ON, isChecked).apply();
             }
-        };
-        getOnBackPressedDispatcher().addCallback(this, backPressedCallback);
+        });
+
+        // 难度选择按钮的跳转逻辑在实验三提交②中接入 GameActivity
+        // TODO(实验三提交②): btn_easy/btn_normal/btn_hard -> Intent 跳转
     }
 }

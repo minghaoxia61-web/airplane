@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">AircraftWar2026</string>
+    <string name="menu_background_desc">菜单背景</string>
+    <string name="difficulty_easy">简单</string>
+    <string name="difficulty_normal">普通</string>
+    <string name="difficulty_hard">困难</string>
+    <string name="music_switch">音乐</string>
 </resources>
